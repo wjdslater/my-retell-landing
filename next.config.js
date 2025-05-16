@@ -9,6 +9,8 @@ const nextConfig = {
   },
   // This ensures that assets are served from the correct path
   assetPrefix: '/my-retell-landing',
+  // Add trailing slashes to URLs to help with routing
+  trailingSlash: true,
 }
 
 module.exports = nextConfig
