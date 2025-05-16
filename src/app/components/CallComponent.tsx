@@ -54,13 +54,13 @@ export default function CallComponent() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-2">Retell Web Call</h1>
+   
       <button
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
         onClick={startCall}
         disabled={loading}
       >
-        {loading ? 'Starting Call...' : 'Start Call'}
+        {loading ? 'Starting Call...' : 'Click here'}
       </button>
       {error && <p className="text-red-600 mt-2">{error}</p>}
     </div>
