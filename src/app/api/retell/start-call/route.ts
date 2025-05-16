@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const { agent_id } = await req.json();
-
-  if (!agent_id) {
-    return NextResponse.json({ error: 'Missing agent_id' }, { status: 400 });
-  }
-
-  const RETELL_API_KEY = process.env.RETELL_API_KEY;
-  if (!RETELL_API_KEY) {
-    return NextResponse.json({ error: 'Missing RETELL_API_KEY in environment' }, { status: 500 });
-  }
-
   try {
+    const { agent_id } = await req.json();
+
+    if (!agent_id) {
+      return NextResponse.json({ error: 'Missing agent_id' }, { status: 400 });
+    }
+
+    const RETELL_API_KEY = process.env.RETELL_API_KEY;
+    if (!RETELL_API_KEY) {
+      return NextResponse.json({ error: 'Missing RETELL_API_KEY in environment' }, { status: 500 });
+    }
+
     const response = await fetch('https://api.retellai.com/v2/create-web-call', {
       method: 'POST',
       headers: {
