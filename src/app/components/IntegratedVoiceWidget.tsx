@@ -181,7 +181,7 @@ export default function IntegratedVoiceWidget({
     setError(null);
 
     try {
-      const res = await fetch('/api/retell/start-call', {
+      const res = await fetch('https://my-retell-landing-git-in-adb231-willslater-salesapeais-projects.vercel.app/api/retell/start-call', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ agent_id: "agent_2686a29d5e0c39474bf6a1ebc9" }),
