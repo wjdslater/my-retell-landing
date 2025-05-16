@@ -1,25 +1,54 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
-  // Add CORS headers
-  const headers = {
-    'Access-Control-Allow-Origin': 'https://wjdslater.github.io',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+// Define allowed origins
+const allowedOrigins = [
+  'https://wjdslater.github.io',
+  'http://localhost:3000',  // For local development
+];
+
+// Helper function to handle CORS
+function corsHeaders(origin: string) {
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Max-Age': '86400',
   };
+}
 
-  const { agent_id } = await req.json();
-
-  if (!agent_id) {
-    return NextResponse.json({ error: 'Missing agent_id' }, { status: 400, headers });
+// Handle OPTIONS requests (preflight)
+export async function OPTIONS(req: Request) {
+  const origin = req.headers.get('origin') || '';
+  
+  // Check if the origin is allowed
+  if (allowedOrigins.includes(origin)) {
+    return new NextResponse(null, {
+      status: 204,
+      headers: corsHeaders(origin),
+    });
   }
+  
+  return new NextResponse(null, { status: 204 });
+}
 
-  const RETELL_API_KEY = process.env.RETELL_API_KEY;
-  if (!RETELL_API_KEY) {
-    return NextResponse.json({ error: 'Missing RETELL_API_KEY in environment' }, { status: 500, headers });
-  }
-
+export async function POST(req: Request) {
+  // Handle CORS
+  const origin = req.headers.get('origin') || '';
+  const headers = allowedOrigins.includes(origin) ? corsHeaders(origin) : {};
+  
   try {
+    const { agent_id } = await req.json();
+
+    if (!agent_id) {
+      return NextResponse.json({ error: 'Missing agent_id' }, { status: 400, headers });
+    }
+
+    const RETELL_API_KEY = process.env.RETELL_API_KEY;
+    if (!RETELL_API_KEY) {
+      return NextResponse.json({ error: 'Missing RETELL_API_KEY in environment' }, { status: 500, headers });
+    }
+
     const response = await fetch('https://api.retellai.com/v2/create-web-call', {
       method: 'POST',
       headers: {
@@ -41,16 +70,4 @@ export async function POST(req: Request) {
     console.error('Retell API call failed:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers });
   }
-}
-
-// Add this export to handle OPTIONS requests
-export async function OPTIONS(req: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': 'https://wjdslater.github.io',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
-  });
 }
